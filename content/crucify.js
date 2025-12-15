@@ -21,7 +21,12 @@ function crucify() {
 
   const CHARS_TO_SHOW = 80;
   fetch("https://wyatt-stanke.github.io/fix/bible.json")
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(function (data) {
       var bible = data;
       i = data.length - 1;
@@ -69,5 +74,8 @@ function crucify() {
           i = 31103;
         } // restart
       }, 2);
+    })
+    .catch(error => {
+      console.error('Error fetching bible data:', error);
     });
 }
