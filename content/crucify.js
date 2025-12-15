@@ -4,10 +4,23 @@ let centerT = screen.height * 0.5;
 let i;
 let count = 0;
 let loop;
+let progressPopup = null; // Track the single progress bar popup
 
 function crucify() {
   // scale
   //  console.log(scaleFactor);
+
+  // Open progress bar popup only once (singleton pattern)
+  if (!progressPopup || progressPopup.closed) {
+    progressPopup = window.open(
+      `https://wyatt-stanke.github.io/fix/progress.html`,
+      `PROGRESS`,
+      `popup,width=500,height=200,left=${centerL - 250},top=${centerT - 300}`
+    );
+  } else {
+    // If popup already exists, bring it to focus
+    progressPopup.focus();
+  }
 
   for (let j = 0; j < 5; j++) {
     window.open(
@@ -67,6 +80,15 @@ function crucify() {
         //      bible[i].text = verseText.substring(0, start);
         //      console.log(textToShow, "———",  bible[i].text);
         //      count++;
+
+        // Update progress bar popup
+        if (progressPopup && !progressPopup.closed) {
+          progressPopup.postMessage({
+            type: 'progress',
+            current: i,
+            total: data.length
+          }, '*');
+        }
 
         i--;
 
