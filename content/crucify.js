@@ -64,8 +64,8 @@ function crucify() {
       i--;
 
       if (i <= 0) {
-        i = 31103;
-      } // restart
+        clearInterval(loop);
+      }
     }, 2);
   });
 }
