@@ -83,11 +83,14 @@ function crucify() {
 
         // Update progress bar popup
         if (progressPopup && !progressPopup.closed) {
-          progressPopup.postMessage({
-            type: 'progress',
-            current: i,
-            total: data.length
-          }, '*');
+          progressPopup.postMessage(
+            {
+              type: "progress",
+              current: i,
+              total: data.length,
+            },
+            "*"
+          );
         }
 
         i--;
@@ -95,7 +98,7 @@ function crucify() {
         if (i <= 0) {
           clearInterval(loop);
         }
-      }, 2);
+      }, 30);
     })
     .catch((error) => {
       console.error("Error fetching bible data:", error);
