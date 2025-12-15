@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Verify: Crucify Fix</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+        }
+        .pass { color: #0f0; font-weight: bold; }
+        .fail { color: #f00; font-weight: bold; }
+        button { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
+        .result { background: #222; padding: 20px; margin: 20px 0; border: 2px solid #444; }
+    </style>
+</head>
+<body>
+    <h1>Verification: Crucify Fix</h1>
+    <button onclick="runVerification()">Run Verification</button>
+    <div id="results"></div>
+
+    <script src="content/crucify.js"></script>
+    <script>
+        function runVerification() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Running verification...</h2>';
+            
+            let log = '';
+            let fetchCallCount = 0;
+            let intervalCallCount = 0;
+            
+            // Mock fetch to track calls
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                fetchCallCount++;
+                log += `<p>Fetch call #${fetchCallCount}</p>`;
+                // Return a mock successful response
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([
+                        { verse: "Test 1:1", text: "Test text 1" },
+                        { verse: "Test 1:2", text: "Test text 2" },
+                        { verse: "Test 1:3", text: "Test text 3" }
+                    ])
+                });
+            };
+            
+            // Mock setInterval to track calls
+            const originalSetInterval = window.setInterval;
+            window.setInterval = function(...args) {
+                intervalCallCount++;
+                log += `<p>setInterval call #${intervalCallCount}</p>`;
+                return 999; // dummy interval ID
+            };
+            
+            // Mock window.open
+            window.open = () => ({ closed: false, focus: () => {}, postMessage: () => {} });
+            
+            // Test: First call
+            log += '<h3>CLICK #1 (First call)</h3>';
+            crucify();
+            
+            // Wait for async operations
+            setTimeout(() => {
+                const fetchAfterFirst = fetchCallCount;
+                const intervalAfterFirst = intervalCallCount;
+                
+                // Test: Second call
+                log += '<h3>CLICK #2 (Second call)</h3>';
+                crucify();
+                
+                setTimeout(() => {
+                    const fetchAfterSecond = fetchCallCount;
+                    const intervalAfterSecond = intervalCallCount;
+                    
+                    // Test: Third call
+                    log += '<h3>CLICK #3 (Third call)</h3>';
+                    crucify();
+                    
+                    setTimeout(() => {
+                        const fetchAfterThird = fetchCallCount;
+                        const intervalAfterThird = intervalCallCount;
+                        
+                        // Restore originals
+                        window.fetch = originalFetch;
+                        window.setInterval = originalSetInterval;
+                        
+                        // Display results
+                        const test1 = fetchAfterFirst === 1 && intervalAfterFirst === 1;
+                        const test2 = fetchAfterSecond === 1 && intervalAfterSecond === 1;
+                        const test3 = fetchAfterThird === 1 && intervalAfterThird === 1;
+                        const allPass = test1 && test2 && test3;
+                        
+                        results.innerHTML = `
+                            ${log}
+                            <div class="result">
+                                <h2>Test Results:</h2>
+                                <p>After 1st call: ${fetchAfterFirst} fetch(es), ${intervalAfterFirst} interval(s) 
+                                   <span class="${test1 ? 'pass' : 'fail'}">${test1 ? '✓ PASS' : '✗ FAIL'}</span></p>
+                                <p>After 2nd call: ${fetchAfterSecond} fetch(es), ${intervalAfterSecond} interval(s) 
+                                   <span class="${test2 ? 'pass' : 'fail'}">${test2 ? '✓ PASS' : 'FAIL (should still be 1)'}</span></p>
+                                <p>After 3rd call: ${fetchAfterThird} fetch(es), ${intervalAfterThird} interval(s) 
+                                   <span class="${test3 ? 'pass' : 'fail'}">${test3 ? '✓ PASS' : '✗ FAIL (should still be 1)'}</span></p>
+                                <h2 class="${allPass ? 'pass' : 'fail'}">${allPass ? '✓✓✓ ALL TESTS PASSED ✓✓✓' : '✗✗✗ SOME TESTS FAILED ✗✗✗'}</h2>
+                                <p><strong>Conclusion:</strong> ${allPass ? 'The fix is working correctly! Subsequent clicks do NOT reset the counter/interval.' : 'The fix is not working as expected.'}</p>
+                            </div>
+                        `;
+                    }, 100);
+                }, 100);
+            }, 100);
+        }
+    </script>
+</body>
+</html>

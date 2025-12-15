@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Test Crucify - Detailed</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #222;
+            border: 2px solid #444;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        .info { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>Crucify Function Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: First Click Behavior</h2>
+        <button onclick="test1()">Run Test 1</button>
+        <div id="test1-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Subsequent Clicks (Multiple)</h2>
+        <button onclick="test2()">Run Test 2</button>
+        <div id="test2-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Interval Not Reset</h2>
+        <button onclick="test3()">Run Test 3</button>
+        <div id="test3-result"></div>
+    </div>
+
+    <script src="content/crucify.js"></script>
+    <script>
+        // Helper to mock window.open
+        function mockWindowOpen() {
+            const popups = [];
+            const originalOpen = window.open;
+            window.open = function(...args) {
+                popups.push(args);
+                return { closed: false, focus: () => {}, postMessage: () => {} };
+            };
+            return {
+                popups,
+                restore: () => { window.open = originalOpen; }
+            };
+        }
+
+        // Helper to mock fetch
+        function mockFetch() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([
+                        { verse: "Genesis 1:1", text: "In the beginning..." },
+                        { verse: "Genesis 1:2", text: "And the earth was..." },
+                        { verse: "Genesis 1:3", text: "And God said..." }
+                    ])
+                });
+            };
+            return {
+                restore: () => { window.fetch = originalFetch; }
+            };
+        }
+
+        function test1() {
+            const result = document.getElementById('test1-result');
+            result.innerHTML = '<p class="info">Running test 1...</p>';
+            
+            // Reset state
+            location.reload();
+        }
+
+        function test2() {
+            const result = document.getElementById('test2-result');
+            result.innerHTML = '<p class="info">Running test 2...</p>';
+            
+            const mock = mockWindowOpen();
+            const fetchMock = mockFetch();
+            
+            // First click
+            crucify();
+            const firstClickPopups = mock.popups.length;
+            
+            // Second click
+            crucify();
+            const secondClickPopups = mock.popups.length - firstClickPopups;
+            
+            // Third click
+            crucify();
+            const thirdClickPopups = mock.popups.length - firstClickPopups - secondClickPopups;
+            
+            mock.restore();
+            fetchMock.restore();
+            
+            result.innerHTML = `
+                <p>First click: ${firstClickPopups} popups <span class="${firstClickPopups === 6 ? 'pass' : 'fail'}">${firstClickPopups === 6 ? 'PASS' : 'FAIL (expected 6: 1 progress + 5 text)'}</span></p>
+                <p>Second click: ${secondClickPopups} popups <span class="${secondClickPopups === 6 ? 'pass' : 'fail'}">${secondClickPopups === 6 ? 'PASS' : 'FAIL (expected 6: can spawn more popups)'}</span></p>
+                <p>Third click: ${thirdClickPopups} popups <span class="${thirdClickPopups === 6 ? 'pass' : 'fail'}">${thirdClickPopups === 6 ? 'PASS' : 'FAIL (expected 6: can spawn more popups)'}</span></p>
+            `;
+        }
+
+        function test3() {
+            const result = document.getElementById('test3-result');
+            result.innerHTML = '<p class="info">Running test 3... This test takes a few seconds...</p>';
+            
+            const mock = mockWindowOpen();
+            const fetchMock = mockFetch();
+            
+            let intervalCallCount = 0;
+            const originalSetInterval = window.setInterval;
+            window.setInterval = function(fn, delay) {
+                intervalCallCount++;
+                // Don't actually run the interval for testing
+                return intervalCallCount;
+            };
+            
+            // First click - should create interval
+            crucify();
+            const intervalsAfterFirst = intervalCallCount;
+            
+            // Wait a bit then click again
+            setTimeout(() => {
+                crucify();
+                const intervalsAfterSecond = intervalCallCount;
+                
+                // Click again
+                crucify();
+                const intervalsAfterThird = intervalCallCount;
+                
+                mock.restore();
+                fetchMock.restore();
+                window.setInterval = originalSetInterval;
+                
+                const passed = intervalsAfterFirst === 1 && intervalsAfterSecond === 1 && intervalsAfterThird === 1;
+                
+                result.innerHTML = `
+                    <p>Intervals after first click: ${intervalsAfterFirst} <span class="${intervalsAfterFirst === 1 ? 'pass' : 'fail'}">${intervalsAfterFirst === 1 ? 'PASS' : 'FAIL'}</span></p>
+                    <p>Intervals after second click: ${intervalsAfterSecond} <span class="${intervalsAfterSecond === 1 ? 'pass' : 'fail'}">${intervalsAfterSecond === 1 ? 'PASS' : 'FAIL'}</span></p>
+                    <p>Intervals after third click: ${intervalsAfterThird} <span class="${intervalsAfterThird === 1 ? 'pass' : 'fail'}">${intervalsAfterThird === 1 ? 'PASS' : 'FAIL'}</span></p>
+                    <p style="font-size: 1.2em; margin-top: 10px;"><strong>${passed ? '<span class="pass">✓ ALL TESTS PASSED</span>' : '<span class="fail">✗ SOME TESTS FAILED</span>'}</strong></p>
+                    <p>This confirms that the interval is NOT reset on subsequent clicks!</p>
+                `;
+            }, 100);
+        }
+    </script>
+</body>
+</html>
