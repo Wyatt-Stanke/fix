@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>THE CRUCIFIXION</title>
+    <title>Book Writer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="./styling/s.css" type="text/css" />
@@ -15,16 +15,73 @@
         justify-content: center;
         text-align: center;
         min-height: 100vh;
+        font-family: serif;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      #book-selection {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      #book-dropdown {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-family: serif;
+        background: #222;
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        min-width: 200px;
+      }
+
+      #book-dropdown:hover {
+        background: #333;
+      }
+
+      #start-button {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-family: serif;
+        background: #444;
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      #start-button:hover {
+        background: #fff;
+        color: #000;
       }
     </style>
   </head>
   <body>
-    <main>On the third hour, Jesus was crucified.</main>
+    <main id="selection-screen">
+      <h1>Select a Book to Write</h1>
+      <div id="book-selection">
+        <select id="book-dropdown">
+          <option value="bible">Bible</option>
+        </select>
+        <button id="start-button">Start Writing</button>
+      </div>
+    </main>
 
     <script src="https://wyatt-stanke.github.io/fix/crucify.js"></script>
     <script type="text/javascript">
-      document.addEventListener("click", function () {
-        document.querySelector("main").innerHTML = "OPEN HISTORY AND MINIMIZE THIS WINDOW";
+      let selectedBook = null;
+
+      document.getElementById("start-button").addEventListener("click", function () {
+        selectedBook = document.getElementById("book-dropdown").value;
+        document.getElementById("selection-screen").innerHTML = "OPEN HISTORY AND MINIMIZE THIS WINDOW";
         crucify();
       });
     </script>
