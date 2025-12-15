@@ -5,6 +5,7 @@ let i;
 let count = 0;
 let loop;
 let progressPopup = null; // Track the single progress bar popup
+let isInitialized = false; // Track if crucify has been initialized
 
 function crucify() {
   // scale
@@ -31,6 +32,12 @@ function crucify() {
       }`
     );
   }
+
+  // Only initialize the interval and fetch data once
+  if (isInitialized) {
+    return;
+  }
+  isInitialized = true;
 
   const CHARS_TO_SHOW = 80;
   fetch("https://wyatt-stanke.github.io/fix/bible.json")
