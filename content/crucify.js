@@ -14,7 +14,7 @@ function crucify(){
 //  
   
   const CHARS_TO_SHOW = 80;
-   $.getJSON('bible.json', function(data) {
+   $.getJSON('https://wyatt-stanke.github.io/fix/bible.json', function(data) {
     var bible = data;
      i = randInt(1,31102);
      
