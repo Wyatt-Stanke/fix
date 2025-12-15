@@ -22,7 +22,7 @@ function crucify() {
   const CHARS_TO_SHOW = 80;
   $.getJSON("https://wyatt-stanke.github.io/fix/bible.json", function (data) {
     var bible = data;
-    i = 31102;
+    i = data.length - 1;
 
     loop = setInterval(function () {
       history.pushState({}, "", `?=${i}`);
@@ -66,6 +66,6 @@ function crucify() {
       if (i <= 0) {
         i = 31103;
       } // restart
-    }, 500);
+    }, 2);
   });
 }
