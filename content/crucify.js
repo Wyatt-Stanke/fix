@@ -16,7 +16,7 @@ function crucify(){
   const CHARS_TO_SHOW = 80;
    $.getJSON('https://wyatt-stanke.github.io/fix/bible.json', function(data) {
     var bible = data;
-     i = randInt(1,31102);
+     i = 31102;
      
      
     loop = setInterval(function(){
@@ -68,11 +68,4 @@ function crucify(){
   });
 
   
-}
-
-
-
-
-function randInt(min, max) { 
-  return Math.floor(Math.random() * (max - min + 1) + min)
 }
