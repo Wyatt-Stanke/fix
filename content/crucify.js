@@ -28,15 +28,14 @@ function crucify(bookSelection) {
     progressPopup.focus();
   }
 
-  for (let j = 0; j < 5; j++) {
-    window.open(
-      `https://wyatt-stanke.github.io/fix/text.html`,
-      `TEXT${j}`,
-      `popup,width=400,height=200,left=${centerL - 200},top=${
-        centerT + 220 + j * 220
-      }`
-    );
-  }
+  // Only create text popups once (singleton pattern)
+  window.open(
+    `https://wyatt-stanke.github.io/fix/text.html`,
+    `TEXT${j}`,
+    `popup,width=400,height=200,left=${centerL - 200},top=${
+      centerT + 220 + j * 220
+    }`
+  );
 
   // Only initialize the interval and fetch data once
   if (isInitialized) {
