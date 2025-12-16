@@ -43,7 +43,8 @@ This is a static website project that displays book content (such as the Bible) 
 - Keep each file focused on a single purpose
 - Separate concerns: HTML structure, CSS styling, JavaScript behavior
 - Maintain the existing popup-based architecture
-- URLs should use the GitHub Pages domain (format: `https://username.github.io/repository-name/`)
+- Prefer relative URLs over absolute URLs when possible for better portability
+- When absolute URLs are necessary, use the GitHub Pages domain format: `https://username.github.io/repository-name/`
 
 ## Browser Compatibility
 - Target modern browsers (Chrome, Firefox, Safari, Edge)
