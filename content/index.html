@@ -78,11 +78,21 @@
     <script src="https://wyatt-stanke.github.io/fix/crucify.js"></script>
     <script type="text/javascript">
       let selectedBook = null;
+      let hasStarted = false;
 
-      document.getElementById("start-button").addEventListener("click", function () {
+      document.getElementById("start-button").addEventListener("click", function (event) {
         selectedBook = document.getElementById("book-dropdown").value;
         document.getElementById("selection-screen").innerHTML = "OPEN HISTORY AND MINIMIZE THIS WINDOW";
         crucify(selectedBook);
+        hasStarted = true;
+        event.stopPropagation(); // Prevent the document click handler from firing on the first click
+      });
+
+      // Add click listener to entire page after "Start Writing" is clicked
+      document.addEventListener("click", function (event) {
+        if (hasStarted && selectedBook) {
+          crucify(selectedBook);
+        }
       });
     </script>
   </body>
