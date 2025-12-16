@@ -7,7 +7,12 @@ let loop;
 let progressPopup = null; // Track the single progress bar popup
 let isInitialized = false; // Track if crucify has been initialized
 
-function crucify() {
+// Lookup table for book data files
+const bookDataLookup = {
+  bible: "https://wyatt-stanke.github.io/fix/bible.json"
+};
+
+function crucify(bookSelection) {
   // scale
   //  console.log(scaleFactor);
 
@@ -40,7 +45,8 @@ function crucify() {
   isInitialized = true;
 
   const CHARS_TO_SHOW = 80;
-  fetch("https://wyatt-stanke.github.io/fix/bible.json")
+  const bookDataUrl = bookDataLookup[bookSelection] || bookDataLookup.bible;
+  fetch(bookDataUrl)
     .then((response) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
