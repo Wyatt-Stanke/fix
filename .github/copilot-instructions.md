@@ -92,3 +92,12 @@ This is a static website project that displays book content (such as the Bible) 
 - The book data lookup table in `crucify.js` maps book names to JSON URLs
 - Progress tracking uses window communication between popups
 - Text display windows are created dynamically with calculated positions
+
+## Updating These Instructions
+- Review and update this file when making significant changes to:
+  - Project architecture or technology stack
+  - Coding standards or conventions
+  - New features that introduce new patterns or practices
+  - Dependencies or deployment processes
+- Keep instructions clear, concise, and actionable
+- Remove outdated guidance that no longer applies
