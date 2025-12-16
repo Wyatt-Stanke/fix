@@ -6,6 +6,7 @@ let count = 0;
 let loop;
 let progressPopup = null; // Track the single progress bar popup
 let isInitialized = false; // Track if crucify has been initialized
+let textPopupsCreated = false; // Track if text popups have been created
 
 // Lookup table for book data files
 const bookDataLookup = {
@@ -28,14 +29,18 @@ function crucify(bookSelection) {
     progressPopup.focus();
   }
 
-  for (let j = 0; j < 5; j++) {
-    window.open(
-      `https://wyatt-stanke.github.io/fix/text.html`,
-      `TEXT${j}`,
-      `popup,width=400,height=200,left=${centerL - 200},top=${
-        centerT + 220 + j * 220
-      }`
-    );
+  // Only create text popups once (singleton pattern)
+  if (!textPopupsCreated) {
+    for (let j = 0; j < 5; j++) {
+      window.open(
+        `https://wyatt-stanke.github.io/fix/text.html`,
+        `TEXT${j}`,
+        `popup,width=400,height=200,left=${centerL - 200},top=${
+          centerT + 220 + j * 220
+        }`
+      );
+    }
+    textPopupsCreated = true;
   }
 
   // Only initialize the interval and fetch data once
